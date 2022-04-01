@@ -39,9 +39,9 @@ class Console:
         while 1:
             inp = (await Console.input(Colorate.Horizontal(Colors.yellow_to_red,
                                                            f"╔═══[{gethostname()}"
-                                                           f"@PyTools]\n╚══════> "))).strip()
+                                                           f"@PyTools]\n╚══════> ")))
             if not inp: pass
-            await Console.handle(inp)
+            await Console.handle(inp.strip())
 
     @staticmethod
     async def command(cmds):

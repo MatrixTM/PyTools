@@ -45,7 +45,7 @@ class Console:
 
     @staticmethod
     async def command(cmds):
-        return (await asyncio.create_subprocess_shell(*cmds.split(" "))).communicate()
+        return await (await asyncio.create_subprocess_shell(*cmds.split(" "))).communicate()
 
     @staticmethod
     async def handle(inp):

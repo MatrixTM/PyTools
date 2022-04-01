@@ -1,5 +1,5 @@
 import asyncio
-from os import system, name
+from os import name
 from socket import gethostname
 
 from aioconsole import aprint, ainput
@@ -27,11 +27,11 @@ class Console:
 
     @staticmethod
     async def input(*messages):
-        return await aprint(' '.join([txt for txt in messages]))
+        return await ainput(' '.join([txt for txt in messages]))
 
     @staticmethod
     async def clear():
-        system('cls' if name == 'nt' else 'clear')
+        await Console.command('cls' if name == 'nt' else 'clear')
 
     @staticmethod
     async def run():
@@ -42,6 +42,10 @@ class Console:
                                                            f"@PyTools]\n╚══════> "))).strip()
             if not inp: pass
             await Console.handle(inp)
+
+    @staticmethod
+    async def command(cmds):
+        return (await asyncio.create_subprocess_shell(*cmds.split(" "))).communicate()
 
     @staticmethod
     async def handle(inp):
@@ -55,4 +59,3 @@ class Console:
 
 if __name__ == '__main__':
     asyncio.run(Console.run())
-

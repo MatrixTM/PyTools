@@ -1,2 +1,3 @@
 requests==2.27.1
 pystyle==1.1
+aioconsole~=0.4.1

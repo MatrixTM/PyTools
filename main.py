@@ -2,7 +2,7 @@ import asyncio
 from os import system, name
 from socket import gethostname
 
-from aioconsole import aprint, ainput as _input
+from aioconsole import aprint, ainput
 from pystyle import Colorate, Colors, Center
 
 
@@ -27,7 +27,7 @@ class Console:
 
     @staticmethod
     async def input(*messages):
-        return await _input(''.join([txt for txt in messages]))
+        return await aprint(' '.join([txt for txt in messages]))
 
     @staticmethod
     async def clear():
@@ -55,3 +55,4 @@ class Console:
 
 if __name__ == '__main__':
     asyncio.run(Console.run())
+

@@ -1,5 +1,5 @@
 import asyncio
-from os import name
+from os import name, system
 from socket import gethostname
 
 from aioconsole import aprint, ainput
@@ -12,7 +12,7 @@ from tools.impl import handle as tools_handle
 class Console:
     @staticmethod
     async def banner():
-        # await Console.clear()
+        await Console.clear()
         await aprint(Colorate.Diagonal(Colors.yellow_to_red, Center.XCenter("""
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║    ooooooooo.              ooooooooooooo                     oooo              ║
@@ -50,8 +50,11 @@ class Console:
             await Console.handle(inp.strip())
 
     @staticmethod
-    async def command(cmds):
-        return await (await asyncio.create_subprocess_shell(*cmds.split(" "))).communicate()
+    async def command(cmd):
+        try:
+            return await (await asyncio.create_subprocess_shell(cmd=cmd)).communicate()
+        except:
+            system(cmd)
 
     @staticmethod
     async def handle(inp):

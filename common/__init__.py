@@ -13,7 +13,7 @@ class Console:
     @staticmethod
     async def banner():
         # await Console.clear()
-        await aprint(Colorate.Diagonal(Colors.black_to_red, Center.XCenter("""
+        await aprint(Colorate.Diagonal(Colors.yellow_to_red, Center.XCenter("""
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║    ooooooooo.              ooooooooooooo                     oooo              ║
 ║    `888   `Y88.             8'   888   `8                     `888             ║

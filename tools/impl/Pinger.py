@@ -64,7 +64,7 @@ class Pinger(Tool):
 
         with suppress(KeyboardInterrupt):
             Pinger.using = True
-            asyncio.create_task(Pinger.amim(args[0].upper(), target, port))
+            asyncio.create_task(Pinger.amim(args[0].upper(), address, port))
 
             while 1:
                 request = await method(address, port)
@@ -80,7 +80,7 @@ class Pinger(Tool):
                                         "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
                                             counter,
                                             address,
-                                            f" port {port} " if method not in ["ICMP"] else " ",
+                                            (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
                                             Pinger.status(request, method),
                                             args[0].upper(),
                                             request[0])))
@@ -147,10 +147,10 @@ class Pinger(Tool):
     async def amim(method, target, port):
         while Pinger.using:
             await aioconsole.aprint(
-                "[%s] Pinging %s%s using %s protocol" %
+                "[%s] Pinging %s%susing %s protocol" %
                 (next(dots),
                  target,
-                 port if method not in ["ICMP"] else "",
+                 (f" port {port} " if method not in ["ICMP", "HTTP"] else " "),
                  method),
                 end="\r")
             await asyncio.sleep(.05)

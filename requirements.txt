@@ -1,4 +1,5 @@
 requests==2.27.1
+cfscrape==2.1.1
 pystyle==1.1
 aioconsole~=0.4.1
 aioping~=0.3.1

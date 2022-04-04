@@ -42,6 +42,7 @@ class Timer:
         return round((self._done - self._start) * 1000, 2)
 
 
+# noinspection PyUnusedLocal
 class Pinger(Tool):
     using = False
 
@@ -68,7 +69,7 @@ class Pinger(Tool):
 
                 while 1:
                     request = await method(address, port)
-                    if not request[1]:
+                    if not request[1] and request[1] != 408:
                         bad += 1
 
                     counter += 1
@@ -77,25 +78,26 @@ class Pinger(Tool):
                     pings.append(request[0])
 
                     await aprint(
-                        Colorate.Horizontal(Colors.green_to_cyan if request[1] else Colors.red_to_purple,
-                                            "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
-                                                counter,
-                                                address,
-                                                (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
-                                                Pinger.status(request, method),
-                                                args[0].upper(),
-                                                request[0])))
+                        Colorate.Horizontal(
+                            Colors.green_to_cyan if request[1] and request[1] != 408 else Colors.red_to_purple,
+                            "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
+                                counter,
+                                address,
+                                (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
+                                Pinger.status(request, method),
+                                args[0].upper(),
+                                request[0])))
         finally:
             Pinger.using = False
 
     @staticmethod
-    async def ICMP(ip):
+    async def ICMP(ip, port):
         with suppress(TimeoutError):
             return round(await ping(ip, timeout=5) * 1000, 2), True
         return 5000, False
 
     @staticmethod
-    async def HTTP(ip):
+    async def HTTP(ip, port):
         with suppress(TimeoutError), Timer() as timer:
             async with ClientSession(trust_env=True) as session, \
                     session.get(ip, timeout=5) as r:

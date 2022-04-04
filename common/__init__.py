@@ -67,6 +67,8 @@ class Console:
                 await aprint("help ?")
             elif {cmd} & {"EXIT", "QUIT", "LOGOUT", "EXIT()"}:
                 exit(-1)
+            elif {cmd} & {"CLEAR", "CLS"}:
+                await Console.banner()
             elif await tools_handle(cmd, *args):
                 pass
             elif cmd:

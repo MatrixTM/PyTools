@@ -58,7 +58,7 @@ class Patterns:
     URL = compile("\S+[.]\w{2,3}")
 
     @staticmethod
-    def parseCommand(cmd: str):
+    def parsecommand(cmd: str):
         with suppress(Exception):
             sp = cmd.split(" ")
             return sp[0].lower(), sp[1:]
@@ -71,7 +71,7 @@ class Tool:
 
 
 class Math:
-    percentage = lambda part, whole: 100 * float(part) / float(whole)
+    percenctage = lambda part, whole: 100 * float(part) / float(whole)
 
     @staticmethod
     def ping_sizer(lists):

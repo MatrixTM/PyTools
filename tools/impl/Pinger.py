@@ -1,9 +1,9 @@
-import asyncio
+from asyncio import sleep, open_connection, TimeoutError, wait_for, create_task
 from contextlib import suppress
 from itertools import cycle
 from time import time
 
-import aioconsole
+from aioconsole import aprint
 from aiohttp import ClientSession
 from aioping import ping
 from pystyle import Colorate, Colors
@@ -35,7 +35,7 @@ class Timer:
     def is_done(self):
         return self._done is None
 
-    def currentMs(self):
+    def currentms(self):
         return round((time() - self._start) * 1000, 2)
 
     def result(self):
@@ -61,52 +61,54 @@ class Pinger(Tool):
         assert method, "invalid method"
 
         address = target.human_repr() if method == Pinger.HTTP else target.host
+        try:
+            with suppress(KeyboardInterrupt):
+                Pinger.using = True
+                create_task(Pinger.amim(args[0].upper(), address, port))
 
-        with suppress(KeyboardInterrupt):
-            Pinger.using = True
-            asyncio.create_task(Pinger.amim(args[0].upper(), address, port))
+                while 1:
+                    request = await method(address, port)
+                    if not request[1]:
+                        bad += 1
 
-            while 1:
-                request = await method(address, port)
-                if not request[1]: bad += 1
+                    counter += 1
 
-                counter += 1
+                    await sleep(0.5)
+                    pings.append(request[0])
 
-                await asyncio.sleep(0.5)
-                pings.append(request[0])
-
-                await aioconsole.aprint(
-                    Colorate.Horizontal(Colors.green_to_cyan if request[1] else Colors.red_to_purple,
-                                        "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
-                                            counter,
-                                            address,
-                                            (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
-                                            Pinger.status(request, method),
-                                            args[0].upper(),
-                                            request[0])))
-        Pinger.using = False
+                    await aprint(
+                        Colorate.Horizontal(Colors.green_to_cyan if request[1] else Colors.red_to_purple,
+                                            "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
+                                                counter,
+                                                address,
+                                                (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
+                                                Pinger.status(request, method),
+                                                args[0].upper(),
+                                                request[0])))
+        finally:
+            Pinger.using = False
 
     @staticmethod
-    async def ICMP(IP, PORT):
-        with suppress(asyncio.TimeoutError):
-            return round(await ping(IP, timeout=5) * 1000, 2), True
+    async def ICMP(ip):
+        with suppress(TimeoutError):
+            return round(await ping(ip, timeout=5) * 1000, 2), True
         return 5000, False
 
     @staticmethod
-    async def HTTP(IP, PORT):
-        with suppress(asyncio.TimeoutError), Timer() as timer:
+    async def HTTP(ip):
+        with suppress(TimeoutError), Timer() as timer:
             async with ClientSession(trust_env=True) as session, \
-                    session.get(IP, timeout=5) as r:
+                    session.get(ip, timeout=5) as r:
                 result = r.status
-            return timer.currentMs(), result
+            return timer.currentms(), result
         return timer.result(), 408
 
     @staticmethod
-    async def TCP(IP, PORT):
-        with suppress(asyncio.TimeoutError), Timer() as timer:
-            fut = asyncio.open_connection(IP, PORT)
-            await asyncio.wait_for(fut, timeout=5)
-            return timer.currentMs(), True
+    async def TCP(ip, port):
+        with suppress(TimeoutError), Timer() as timer:
+            fut = open_connection(ip, port)
+            await wait_for(fut, timeout=5)
+            return timer.currentms(), True
         return timer.result(), False
 
     # @staticmethod
@@ -119,14 +121,14 @@ class Pinger(Tool):
     #     return timer.currentMs(), False
 
     @staticmethod
-    def select(TXT):
-        if TXT == "TCP":
+    def select(txt):
+        if txt == "TCP":
             return Pinger.TCP
         # elif TXT == "UDP":
         #     return Pinger.UDP
-        elif TXT == "ICMP":
+        elif txt == "ICMP":
             return Pinger.ICMP
-        elif TXT == "HTTP":
+        elif txt == "HTTP":
             return Pinger.HTTP
         else:
             return None
@@ -146,11 +148,11 @@ class Pinger(Tool):
     @staticmethod
     async def amim(method, target, port):
         while Pinger.using:
-            await aioconsole.aprint(
+            await aprint(
                 "[%s] Pinging %s%susing %s protocol" %
                 (next(dots),
                  target,
                  (f" port {port} " if method not in ["ICMP", "HTTP"] else " "),
                  method),
                 end="\r")
-            await asyncio.sleep(.05)
+            await sleep(.05)

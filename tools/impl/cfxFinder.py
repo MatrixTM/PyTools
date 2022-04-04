@@ -1,67 +1,67 @@
-import asyncio
+from asyncio import sleep, TimeoutError, create_task
 from contextlib import suppress
 from itertools import cycle
-from requests import get, Session
-from cfscrape import create_scraper, get_tokens
-from json import loads
+from aiocfscrape import CloudflareScraper
 
-import aioconsole
+from aioconsole import aprint
 from pystyle import Colorate, Colors
 from tools import Tool
+from re import compile
 
 dots = cycle(["|", "/", "-", "\\"])
+cfx_regex = compile(u"(?:cfx[.]re/join/|)(\w+)")
 
-session = Session()
-session.headers = ...
-s = create_scraper(sess=session)
 
-class cfxFinder(Tool):
+class Cfxfinder(Tool):
     using = False
 
     @staticmethod
     async def run(*args):
         assert len(args) == 1, "bad args"
 
-        cfxCode = str(args[0].lower()).replace('http://', '').replace('https://', '').replace('cfx.re/join/', '')
+        cfx_code = cfx_regex.search(args[0].lower())
 
-        assert len(cfxCode) == 6, "The CFX code is not valid"
-        with suppress(KeyboardInterrupt):
-            cfxFinder.using = True
-            asyncio.create_task(cfxFinder.loader(cfxCode))
+        assert cfx_code, "The CFX code is not valid"
+        cfx_code = cfx_code.group(1)
+        assert len(cfx_code) == 6, "The CFX code is not valid"
 
-            try:
-                cfxInfo = await cfxFinder.GetInfo(cfxCode)
-                if cfxInfo['name']:
-                    await aioconsole.aprint(
+        try:
+            with suppress(KeyboardInterrupt):
+                Cfxfinder.using = True
+                create_task(Cfxfinder.loader(cfx_code))
+                await sleep(.9)
+                try:
+                    cfx_info = await Cfxfinder.getinfo(cfx_code)
+                    await aprint(
                         Colorate.Horizontal(Colors.green_to_cyan,
-                                            "Information received from cfx server [%s] {\nAddress: %s" % (cfxInfo['name'], cfxInfo['host'])))
-                else:
-                    await aioconsole.aprint(Colorate.Horizontal(Colors.red_to_purple, cfxInfo))
-            except Exception as e:
-                await aioconsole.aprint(e)
-
-            cfxFinder.using = False
+                                            "Information received from cfx server [%s] {\nAddress: %s" % (
+                                                cfx_info['name'], cfx_info['host'])))
+                except Exception as e:
+                    await aprint(e)
+        finally:
+            Cfxfinder.using = False
 
     @staticmethod
-    async def GetInfo(cfxCode):
+    async def getinfo(cfxcode):
+        with suppress(TimeoutError):
+            async with CloudflareScraper() as s, \
+                    s.get('https://servers-frontend.fivem.net/api/servers/single/' + cfxcode) as res:
+                assert res.status != 200, f"Status Code :{res.status}" + " " * 50
 
-        with suppress(asyncio.TimeoutError), s.get('https://servers-frontend.fivem.net/api/servers/single/' + cfxCode) as res:
-            if res.status_code == 200:
-                cfxJson = loads(res.text)
+                cfx_json = await res.json()
+                assert "error" not in cfx_json, cfx_json['error'] + " " * 50
+
                 return {
-                    'name': cfxJson['Data']['hostname'],
-                    'host': cfxJson['Data']['connectEndPoints'][0]
+                    'name': cfx_json['Data']['hostname'],
+                    'host': cfx_json['Data']['connectEndPoints'][0]
                 }
-            else:
-                return f"Status Code :{res.status_code}"
-
 
     @staticmethod
     async def loader(address):
-        while cfxFinder.using:
-            await aioconsole.aprint(
+        while Cfxfinder.using:
+            await aprint(
                 "[%s] Getting Information From (%s)" %
                 (next(dots),
                  "https://cfx.re/join/" + address),
                 end="\r")
-            await asyncio.sleep(.05)
+            await sleep(.05)

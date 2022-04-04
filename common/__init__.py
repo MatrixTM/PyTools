@@ -44,9 +44,10 @@ class Console:
     async def run():
         while 1:
             inp = (await Console.input(Colorate.Horizontal(Colors.yellow_to_red,
-                                                                  f"╔═══[{gethostname()}"
-                                                                  f"@PyTools]\n╚══════> ")))
-            if not inp: pass
+                                                           f"╔═══[{gethostname()}"
+                                                           f"@PyTools]\n╚══════> ")))
+            if not inp:
+                pass
             await Console.handle(inp.strip())
 
     @staticmethod
@@ -58,7 +59,7 @@ class Console:
 
     @staticmethod
     async def handle(inp):
-        cmd, args = tools.Patterns.parseCommand(inp)
+        cmd, args = tools.Patterns.parsecommand(inp)
         cmd = cmd.upper()
 
         try:

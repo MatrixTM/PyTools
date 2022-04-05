@@ -8,7 +8,7 @@ from pystyle import Colorate, Colors
 from tools import Tool
 from re import compile
 
-dots = cycle(["|", "/", "-", "\"])
+dots = cycle(["|", "/", "-", "\\"])
 cfx_regex = compile(u"(?:cfx[.]re/join/|)(\w+)")
 
 

@@ -41,7 +41,9 @@
 ## Operating Systems Tested
 - Kali Linux 2020.1
 - Windows 10
+- Windows 11
 - Ubuntu 19.10
+- Ubuntu 20.04
 
 
 ## Clone and Install Script

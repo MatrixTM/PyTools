@@ -7,6 +7,7 @@ from struct import pack
 from struct import pack as data_pack
 from sys import maxsize
 from typing import Callable, Any, List
+from time import time
 
 __all__ = ["Patterns", "Random", "Tool", "Math"]
 
@@ -76,3 +77,30 @@ class Math:
     @staticmethod
     def ping_sizer(lists):
         return (min(lists, key=int), max(lists, key=int), round(sum(lists) / len(lists), 2)) if lists else (0, 0, 0)
+
+class Timer:
+    _start: time
+    _done: time
+
+    def __enter__(self):
+        self._start = time()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._done = time()
+
+    def __aenter__(self):
+        self._start = time()
+        return self
+
+    def __aexit__(self, exc_type, exc_val, exc_tb):
+        self._done = time()
+
+    def is_done(self):
+        return self._done is None
+
+    def currentms(self):
+        return round((time() - self._start) * 1000, 2)
+
+    def result(self):
+        return round((self._done - self._start) * 1000, 2)

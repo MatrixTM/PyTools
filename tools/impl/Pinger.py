@@ -9,37 +9,9 @@ from aioping import ping
 from pystyle import Colorate, Colors
 from yarl import URL
 
-from tools import Tool
+from tools import Tool, Timer
 
 dots = cycle(["|", "/", "-", "\\"])
-
-
-class Timer:
-    _start: time
-    _done: time
-
-    def __enter__(self):
-        self._start = time()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self._done = time()
-
-    def __aenter__(self):
-        self._start = time()
-        return self
-
-    def __aexit__(self, exc_type, exc_val, exc_tb):
-        self._done = time()
-
-    def is_done(self):
-        return self._done is None
-
-    def currentms(self):
-        return round((time() - self._start) * 1000, 2)
-
-    def result(self):
-        return round((self._done - self._start) * 1000, 2)
 
 
 # noinspection PyUnusedLocal
@@ -108,8 +80,7 @@ class Pinger(Tool):
     @staticmethod
     async def TCP(ip, port):
         with suppress(TimeoutError), Timer() as timer:
-            fut = open_connection(ip, port)
-            await wait_for(fut, timeout=5)
+            await wait_for(open_connection(ip, port), timeout=5)
             return timer.currentms(), True
         return timer.result(), False
 

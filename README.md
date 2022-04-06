@@ -1,4 +1,4 @@
-<p align="center"><img src="https://cdn.discordapp.com/attachments/953983215721406584/961247561044344832/image.png" width="400px" height="150px" alt="pytools"></p>
+<p align="center"><img src="https://cdn.discordapp.com/attachments/953983215721406584/961247561044344832/image.png" width="400px" alt="pytools"></p>
 
 <h1 align="center">PyTools - The Best Tools</h1>
 <em><h5 align="center">(Programming Language - Python 3)</h5></em>
@@ -10,7 +10,7 @@
 <a href="https://github.com/MatrixTM/PyTools/issues"><img alt="MatrixTM issues" src="https://img.shields.io/github/issues/MatrixTM/PyTools?color=purple&style=for-the-badge"></a>
 
 ## Pre View
-<p align="center"><img src="https://cdn.discordapp.com/attachments/953983215721406584/961248384159711232/unknown.png" width="1078" height="433" alt="preview"></p>
+<p align="center"><img src="https://cdn.discordapp.com/attachments/953983215721406584/961248384159711232/unknown.png" width="1078" alt="preview"></p>
 
 #### Issues ? 
  * [Discord](https://discord.gg/ah7bfjSnhk)

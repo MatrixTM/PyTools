@@ -1,9 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python
 # Edit at https://www.toptal.com/developers/gitignore?templates=python
 
-# idea
-.idea
-
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -154,3 +151,4 @@ cython_debug/
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
+.idea

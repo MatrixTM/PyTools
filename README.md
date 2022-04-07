@@ -17,10 +17,9 @@
  * [Issues Page](https://github.com/MatrixTM/PyTools/issues)
 #### Like the project? Leave a star on the repository!
 
-## Operating Systems Tested
-- Kali Linux 2020.1
-- Windows [ 10, 11 ]
-- Ubuntu [ 19.10, 20.04 ]
+## Documentation
+
+You can read it from [GitHub Wiki](https://github.com/MatrixTM/PyTools/wiki)
 
 ## Clone and Install Script
 
@@ -30,15 +29,5 @@ cd PyTools
 pip install -r requirements.txt
 ```
 
-## Documentation
-
-You can read it from [GitHub Wiki](https://github.com/MatrixTM/PyTools/wiki)
-
 ## Video Tutorial
 Youtube : soon...
-
-
-### Thanks to
- * [MHProDev](https://github.com/MHProDev)
- * [SudoLite](https://github.com/SudoLite)
-     

@@ -7,7 +7,7 @@ from tools import Tool
 class SSH(Tool):
     @staticmethod
     async def run(console, *args):
-        assert len(args) == 2, "bad args"
+        assert len(args) == 2, "Usage: SSH <Ip:Port> <username>"
         ip, username = str(args[0]).split(":"), args[1]
         password = await console.cinput("Enter Password", hide_value=True)
         console.using.set()

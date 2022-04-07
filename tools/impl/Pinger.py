@@ -14,7 +14,7 @@ from tools import Tool, Timer
 class Pinger(Tool):
     @staticmethod
     async def run(console, *args):
-        assert len(args) == 2, "bad args"
+        assert len(args) == 2, "Usage: Ping <Method> <Ip:Port>"
 
         bad = 0
         counter = 0

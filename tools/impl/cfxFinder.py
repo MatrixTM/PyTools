@@ -13,7 +13,7 @@ cfx_regex = compile(u"(?:cfx[.]re/join/|)(\w+)")
 class Cfxfinder(Tool):
     @staticmethod
     async def run(console, *args):
-        assert len(args) == 1, "bad args"
+        assert len(args) == 1, "Usage: cfx <Cfx_Code>"
 
         cfx_code = cfx_regex.search(args[0].lower())
 

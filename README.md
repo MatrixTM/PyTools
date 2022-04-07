@@ -22,7 +22,6 @@
 - Windows [ 10, 11 ]
 - Ubuntu [ 19.10, 20.04 ]
 
-
 ## Clone and Install Script
 
 ```shell script
@@ -31,6 +30,9 @@ cd PyTools
 pip install -r requirements.txt
 ```
 
+## Documentation
+
+You can read it from [GitHub Wiki](https://github.com/MatrixTM/PyTools/wiki)
 
 ## Video Tutorial
 Youtube : soon...

@@ -1,4 +1,8 @@
 import asyncio
+from asyncio import sleep, Event, create_task
+from contextlib import suppress
+from getpass import getpass
+from itertools import cycle
 from os import name, system
 from socket import gethostname
 
@@ -9,10 +13,15 @@ import tools
 from tools.impl import handle as tools_handle
 
 
+# noinspection PyMethodMayBeStatic
 class Console:
-    @staticmethod
-    async def banner():
-        await Console.clear()
+    def __init__(self):
+        self.using = None
+        self.dots = cycle(["|", "/", "-", "\\"])
+        self.loading_text = ""
+
+    async def banner(self):
+        await self.clear()
         await aprint(Colorate.Diagonal(Colors.yellow_to_red, Center.XCenter("""
 ╔════════════════════════════════════════════════════════════════════════════════╗
 ║    ooooooooo.              ooooooooooooo                     oooo              ║
@@ -28,37 +37,54 @@ class Console:
                         ║   Coded By : MXTeam - V 1.0     ║
                         ╚═════════════════════════════════╝\n\n\n\n""")))
 
-    @staticmethod
-    async def input(*messages):
-        return await ainput(' '.join([txt for txt in messages]))
-
-    @staticmethod
-    async def error(*messages):
-        await aprint(Colorate.Diagonal(Colors.red_to_white, "[X] " + ' '.join([txt for txt in messages])))
-
-    @staticmethod
-    async def clear():
-        await Console.command('cls' if name == 'nt' else 'clear')
-
-    @staticmethod
-    async def run():
+    async def loader(self):
         while 1:
-            inp = (await Console.input(Colorate.Horizontal(Colors.yellow_to_red,
-                                                           f"╔═══[{gethostname()}"
-                                                           f"@PyTools]\n╚══════> ")))
+            if not self.using.is_set():
+                await self.using.wait()
+            await aprint(Colorate.Horizontal(Colors.rainbow,
+                                             "[%s] %s" %
+                                             (next(self.dots),
+                                              self.loading_text)),
+                         end="\r")
+            await sleep(.05)
+
+    async def input(self, *messages, hide_value=False):
+        if not hide_value:
+            return await ainput(' '.join([str(txt) for txt in messages]))
+        return getpass(' '.join([str(txt) for txt in messages]))
+
+    async def cinput(self, *messages, hide_value=False):
+        return await self.input(Colorate.Horizontal(Colors.yellow_to_red,
+                                                    f"╔═══[{gethostname()}@PyTools]"
+                                                    f"{(' (' + ' '.join([txt for txt in messages]) + ')') if messages else ''} "
+                                                    f"\n╚══════> "), hide_value=hide_value)
+
+    async def error(self, *messages):
+        await aprint(Colorate.Diagonal(Colors.red_to_white, "[X] " + ' '.join([str(txt) for txt in messages])))
+
+    async def clear(self):
+        if self.using:
+            self.using.clear()
+            await aprint(' ' * len(self.loading_text), end="\r")
+            self.loading_text = ''
+        await self.command('cls' if name == 'nt' else 'clear')
+
+    async def run(self):
+        self.using = Event()
+        create_task(self.loader())
+        while 1:
+            inp = await self.cinput()
             if not inp:
                 pass
-            await Console.handle(inp.strip())
+            await self.handle(inp.strip())
+            self.using.clear()
 
-    @staticmethod
-    async def command(cmd):
-        try:
+    async def command(self, cmd):
+        with suppress(Exception):
             return await (await asyncio.create_subprocess_shell(cmd=cmd)).communicate()
-        except:
-            system(cmd)
+        system(cmd)
 
-    @staticmethod
-    async def handle(inp):
+    async def handle(self, inp):
         cmd, args = tools.Patterns.parsecommand(inp)
         cmd = cmd.upper()
 
@@ -68,16 +94,15 @@ class Console:
             elif {cmd} & {"EXIT", "QUIT", "LOGOUT", "EXIT()"}:
                 exit(-1)
             elif {cmd} & {"CLEAR", "CLS"}:
-                await Console.banner()
-            elif await tools_handle(cmd, *args):
+                await self.banner()
+            elif await tools_handle(self, cmd, *args):
                 pass
             elif cmd:
-                await Console.error("\"%s\" command not found" % cmd.lower())
-
+                await self.error("\"%s\" command not found" % cmd.lower())
 
         except Exception as e:
-            await Console.error(str(e) or repr(e))
+            self.using.clear()
+            await self.error((str(e) or repr(e)) + ' ' * 50)
 
-    @staticmethod
-    async def info(*messages):
+    async def info(self, *messages):
         await aprint(Colorate.Diagonal(Colors.blue_to_white, "[!] " + ' '.join([txt for txt in messages])))

@@ -1,6 +1,5 @@
-from asyncio import sleep, open_connection, TimeoutError, wait_for, create_task
+from asyncio import sleep, open_connection, TimeoutError, wait_for
 from contextlib import suppress
-from itertools import cycle
 
 from aioconsole import aprint
 from aiohttp import ClientSession
@@ -10,15 +9,11 @@ from yarl import URL
 
 from tools import Tool, Timer
 
-dots = cycle(["|", "/", "-", "\\"])
-
 
 # noinspection PyUnusedLocal
 class Pinger(Tool):
-    using = False
-
     @staticmethod
-    async def run(*args):
+    async def run(console, *args):
         assert len(args) == 2, "bad args"
 
         bad = 0
@@ -33,33 +28,33 @@ class Pinger(Tool):
         assert method, "invalid method"
 
         address = target.human_repr() if method == Pinger.HTTP else target.host
-        try:
-            with suppress(KeyboardInterrupt):
-                Pinger.using = True
-                create_task(Pinger.amim(args[0].upper(), address, port))
+        with suppress(KeyboardInterrupt):
+            console.using.set()
+            console.loading_text = "Pinging %s%susing %s protocol" % (address,
+                                                                      (f" port {port} " if args[0].upper() not in [
+                                                                          "ICMP", "HTTP"] else " "),
+                                                                      args[0].upper())
 
-                while 1:
-                    request = await method(address, port)
-                    if not request[1] and request[1] != 408:
-                        bad += 1
+            while 1:
+                request = await method(address, port)
+                if not request[1] and request[1] != 408:
+                    bad += 1
 
-                    counter += 1
+                counter += 1
 
-                    await sleep(0.5)
-                    pings.append(request[0])
+                await sleep(0.5)
+                pings.append(request[0])
 
-                    await aprint(
-                        Colorate.Horizontal(
-                            Colors.green_to_cyan if request[1] and request[1] != 408 else Colors.red_to_purple,
-                            "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
-                                counter,
-                                address,
-                                (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
-                                Pinger.status(request, method),
-                                args[0].upper(),
-                                request[0])))
-        finally:
-            Pinger.using = False
+                await aprint(
+                    Colorate.Horizontal(
+                        Colors.green_to_cyan if request[1] and request[1] != 408 else Colors.red_to_purple,
+                        "[%s] Reply from %s%sstatus %s protocol %s time: %sms" % (
+                            counter,
+                            address,
+                            (f" port {port} " if method not in [Pinger.ICMP, Pinger.HTTP] else " "),
+                            Pinger.status(request, method),
+                            args[0].upper(),
+                            request[0])))
 
     @staticmethod
     async def ICMP(ip, port):
@@ -116,15 +111,3 @@ class Pinger(Tool):
         else:
             s = "OVERLOAD"
         return s
-
-    @staticmethod
-    async def amim(method, target, port):
-        while Pinger.using:
-            await aprint(
-                "[%s] Pinging %s%susing %s protocol" %
-                (next(dots),
-                 target,
-                 (f" port {port} " if method not in ["ICMP", "HTTP"] else " "),
-                 method),
-                end="\r")
-            await sleep(.05)

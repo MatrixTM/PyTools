@@ -1,32 +1,24 @@
 from contextlib import suppress
-from getpass import getpass
 from aioconsole import aprint
 from asyncssh import SSHClientConnection, connect
 from tools import Tool
 
 
 class SSH(Tool):
-    using = False
-
     @staticmethod
-    async def run(*args):
+    async def run(console, *args):
         assert len(args) == 2, "bad args"
-        ip, username = str(args[0]).split(":"), args[1]  # SSH 185.855.855.690:22 root
-        password = getpass("Enter Password: ")
-        await aprint(f"Connecting To {ip[0]}")
-        try:
-            with suppress(KeyboardInterrupt):
-                SSH.using = True
-                try:
-                    Connection: SSHClientConnection
+        ip, username = str(args[0]).split(":"), args[1]
+        password = await console.cinput("Enter Password", hide_value=True)
+        console.using.set()
+        console.loading_text = f"Connecting To {ip[0]}"
+        with suppress(KeyboardInterrupt):
+            Connection: SSHClientConnection
 
-                    async with connect(ip[0], port=int(ip[1]), username=username, password=password,
-                                       known_hosts=None, connect_timeout=5) as Connection:
-                        while True:
-                            inputcmd = input(f"{username}@{ip[0]}> ")
-                            output = await Connection.run(inputcmd)
-                            await aprint(output.stdout)
-                except Exception as e:
-                    await aprint(str(e))
-        finally:
-            SSH.using = False
+            async with connect(ip[0], port=int(ip[1]), username=username, password=password,
+                               known_hosts=None, connect_timeout=5) as Connection:
+                await console.banner()
+                while True:
+                    inputcmd = await console.cinput(f"{username}@{ip[0]}")
+                    output = await Connection.run(inputcmd)
+                    await aprint(output.stdout)

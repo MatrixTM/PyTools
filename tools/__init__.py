@@ -9,7 +9,7 @@ from sys import maxsize
 from typing import Callable, Any, List
 from time import time
 
-__all__ = ["Patterns", "Random", "Tool", "Math"]
+__all__ = ["Patterns", "Random", "Tool", "Math", "Timer"]
 
 
 class Random:
@@ -67,7 +67,8 @@ class Patterns:
 
 
 class Tool:
-    async def run(self, *args):
+    @staticmethod
+    async def run(console, *args):
         raise NotImplementedError
 
 
@@ -77,6 +78,7 @@ class Math:
     @staticmethod
     def ping_sizer(lists):
         return (min(lists, key=int), max(lists, key=int), round(sum(lists) / len(lists), 2)) if lists else (0, 0, 0)
+
 
 class Timer:
     _start: time

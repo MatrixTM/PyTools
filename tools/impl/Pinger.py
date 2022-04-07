@@ -1,7 +1,6 @@
 from asyncio import sleep, open_connection, TimeoutError, wait_for, create_task
 from contextlib import suppress
 from itertools import cycle
-from time import time
 
 from aioconsole import aprint
 from aiohttp import ClientSession

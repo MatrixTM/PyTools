@@ -5,3 +5,4 @@ aiohttp~=3.8.1
 asyncoro~=4.5.6
 yarl~=1.7.2
 aiocfscrape~=1.0.0
+asyncssh~=2.10.0

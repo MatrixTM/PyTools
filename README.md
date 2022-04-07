@@ -7,6 +7,7 @@
 <a href="#"><img alt="PyTools forks" src="https://img.shields.io/github/forks/MatrixTM/PyTools?style=for-the-badge"></a>
 <a href="#"><img alt="PyTools last commit (main)" src="https://img.shields.io/github/last-commit/MatrixTM/PyTools?color=green&style=for-the-badge"></a>
 <a href="#"><img alt="PyTools Repo stars" src="https://img.shields.io/github/stars/MatrixTM/PyTools?style=for-the-badge&color=yellow"></a>
+  <a href="#"><img alt="PyTools License" src="https://img.shields.io/github/license/MatrixTM/PyTools?color=orange&style=for-the-badge"></a>
 <a href="https://github.com/MatrixTM/PyTools/issues"><img alt="MatrixTM issues" src="https://img.shields.io/github/issues/MatrixTM/PyTools?color=purple&style=for-the-badge"></a>
 
 ## Pre View

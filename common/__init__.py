@@ -42,9 +42,7 @@ class Console:
             if not self.using.is_set():
                 await self.using.wait()
             await aprint(Colorate.Horizontal(Colors.rainbow,
-                                             "[%s] %s" %
-                                             (next(self.dots),
-                                              self.loading_text)),
+                            f"[{next(self.dots)}] {self.loading_text}"),
                          end="\r")
             await sleep(.05)
 
@@ -98,7 +96,7 @@ class Console:
             elif await tools_handle(self, cmd, *args):
                 pass
             elif cmd:
-                await self.error("\"%s\" command not found" % cmd.lower())
+                await self.error(f"\"{cmd.lower()}\" command not found")
 
         except Exception as e:
             self.using.clear()

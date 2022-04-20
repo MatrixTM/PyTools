@@ -14,7 +14,7 @@
 <p align="center"><img src="https://cdn.discordapp.com/attachments/953983215721406584/961248384159711232/unknown.png" width="1078" alt="preview"></p>
 
 #### Issues ? 
- * [Discord](https://discord.gg/ah7bfjSnhk)
+ * Soon...
  * [Issues Page](https://github.com/MatrixTM/PyTools/issues)
 #### Like the project? Leave a star on the repository!
 
